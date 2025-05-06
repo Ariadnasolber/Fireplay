@@ -11,6 +11,7 @@ import { useFavorites } from "@/context/FavoritesContext"
 import { useAuth } from "@/context/AuthContext"
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 interface GameCardProps {
   game: Game
@@ -19,11 +20,12 @@ interface GameCardProps {
 
 export default function GameCard({ game, compact = false }: GameCardProps) {
   const { user } = useAuth()
-  const { favorites, addToFavorites, removeFromFavorites } = useFavorites()
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  const isFavorite = favorites.some((fav) => fav.id === game.id)
+  const favoriteStatus = isFavorite(game.id)
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -35,13 +37,14 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
         description: "Please login to add games to your favorites",
         variant: "destructive",
       })
+      router.push(`/login?redirect=/game/${game.slug}`)
       return
     }
 
     setIsLoading(true)
 
     try {
-      if (isFavorite) {
+      if (favoriteStatus) {
         await removeFromFavorites(game)
         toast({
           title: "Removed from favorites",
@@ -57,9 +60,10 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
         })
       }
     } catch (error) {
+      console.error("Error updating favorites:", error)
       toast({
         title: "Error",
-        description: "There was an error updating your favorites",
+        description: "There was an error updating your favorites. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -86,7 +90,7 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
             onClick={handleFavoriteClick}
             disabled={isLoading}
           >
-            <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+            <Heart className={`h-5 w-5 ${favoriteStatus ? "fill-red-500 text-red-500" : ""}`} />
           </Button>
         </div>
         <div className="p-4">

@@ -16,8 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Menu, X, Heart, ShoppingCart, LogOut, User, Sun, Moon } from "lucide-react"
-import { useTheme } from "next-themes"
+import { Search, Menu, X, Heart, ShoppingCart, LogOut, User } from "lucide-react"
 
 export default function Header() {
   const { user, logout } = useAuth()
@@ -26,7 +25,6 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,23 +56,21 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled ? "bg-background/80 backdrop-blur-md shadow-sm" : "bg-background"
+        scrolled ? "bg-zinc-900/80 backdrop-blur-md shadow-sm" : "bg-zinc-900"
       }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-purple-600">
-              Fireplay
+            <Link href="/" className="text-2xl font-bold text-purple-400">
+              FirePlay
             </Link>
 
             <nav className="hidden md:flex ml-10 space-x-4">
               <Link
                 href="/games"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  pathname === "/games"
-                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  pathname === "/games" ? "bg-purple-900 text-purple-300" : "text-zinc-300 hover:bg-zinc-800"
                 }`}
               >
                 Games
@@ -82,22 +78,10 @@ export default function Header() {
               <Link
                 href="/info"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  pathname === "/info"
-                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  pathname === "/info" ? "bg-purple-900 text-purple-300" : "text-zinc-300 hover:bg-zinc-800"
                 }`}
               >
                 Info
-              </Link>
-              <Link
-                href="/contact"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  pathname === "/contact"
-                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                }`}
-              >
-                Contact
               </Link>
             </nav>
           </div>
@@ -107,7 +91,7 @@ export default function Header() {
               <Input
                 type="search"
                 placeholder="Search games..."
-                className="w-64"
+                className="w-64 bg-zinc-800 border-zinc-700"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -115,15 +99,6 @@ export default function Header() {
                 <Search className="h-4 w-4" />
               </Button>
             </form>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
 
             {user ? (
               <>
@@ -187,14 +162,14 @@ export default function Header() {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden">
+        <div className="md:hidden bg-zinc-900">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <form onSubmit={handleSearch} className="p-2">
               <div className="relative">
                 <Input
                   type="search"
                   placeholder="Search games..."
-                  className="w-full"
+                  className="w-full bg-zinc-800 border-zinc-700"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -207,9 +182,7 @@ export default function Header() {
             <Link
               href="/games"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === "/games"
-                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                  : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                pathname === "/games" ? "bg-purple-900 text-purple-300" : "text-zinc-300 hover:bg-zinc-800"
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -218,65 +191,40 @@ export default function Header() {
             <Link
               href="/info"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === "/info"
-                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                  : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                pathname === "/info" ? "bg-purple-900 text-purple-300" : "text-zinc-300 hover:bg-zinc-800"
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Info
             </Link>
-            <Link
-              href="/contact"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === "/contact"
-                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                  : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact
-            </Link>
 
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
-
-            <div className="flex justify-between items-center px-3 py-2">
-              <span className="text-sm font-medium">Theme</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
-            </div>
+            <div className="border-t border-zinc-700 my-2"></div>
 
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-zinc-300 hover:bg-zinc-800"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/favorites"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-zinc-300 hover:bg-zinc-800"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Favorites
                 </Link>
                 <Link
                   href="/cart"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-zinc-300 hover:bg-zinc-800"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Cart
                 </Link>
                 <button
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-zinc-300 hover:bg-zinc-800"
                   onClick={() => {
                     handleLogout()
                     setIsMenuOpen(false)

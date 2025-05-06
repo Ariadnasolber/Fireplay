@@ -10,24 +10,14 @@ import { useCart } from "@/context/CartContext"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, Heart, ShoppingCart, MessageSquare, User } from "lucide-react"
+import { Loader2, Heart, ShoppingCart, User } from "lucide-react"
 import GameCard from "@/components/GameCard"
-import { collection, getDocs, query, where } from "firebase/firestore"
-import { db } from "@/lib/firebase"
-import { useState } from "react"
-
-interface Message {
-  id: string
-  message: string
-  createdAt: any
-}
+import FirestoreDebug from "@/components/FirestoreDebug"
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth()
   const { favorites, loading: favoritesLoading } = useFavorites()
   const { cart, loading: cartLoading } = useCart()
-  const [messages, setMessages] = useState<Message[]>([])
-  const [messagesLoading, setMessagesLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
@@ -36,36 +26,7 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, router])
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (!user) return
-
-      try {
-        const q = query(collection(db, "messages"), where("userId", "==", user.uid))
-        const querySnapshot = await getDocs(q)
-
-        const messagesData: Message[] = []
-        querySnapshot.forEach((doc) => {
-          messagesData.push({
-            id: doc.id,
-            ...doc.data(),
-          } as Message)
-        })
-
-        setMessages(messagesData)
-      } catch (error) {
-        console.error("Error fetching messages:", error)
-      } finally {
-        setMessagesLoading(false)
-      }
-    }
-
-    if (user) {
-      fetchMessages()
-    }
-  }, [user])
-
-  if (authLoading || favoritesLoading || cartLoading || messagesLoading) {
+  if (authLoading || favoritesLoading || cartLoading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
@@ -81,7 +42,7 @@ export default function DashboardPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Your Dashboard</h1>
 
-      <div className="grid md:grid-cols-3 gap-8 mb-8">
+      <div className="grid md:grid-cols-2 gap-8 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Favorites</CardTitle>
@@ -100,16 +61,6 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{cart.length}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">Games in your shopping cart</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Messages</CardTitle>
-            <MessageSquare className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{messages.length}</div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Messages sent to support</p>
           </CardContent>
         </Card>
       </div>
@@ -134,10 +85,9 @@ export default function DashboardPage() {
 
         <div className="md:col-span-3">
           <Tabs defaultValue="favorites">
-            <TabsList className="grid grid-cols-3 mb-4">
+            <TabsList className="grid grid-cols-2 mb-4">
               <TabsTrigger value="favorites">Favorites</TabsTrigger>
               <TabsTrigger value="cart">Cart</TabsTrigger>
-              <TabsTrigger value="messages">Messages</TabsTrigger>
             </TabsList>
 
             <TabsContent value="favorites">
@@ -223,41 +173,10 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="messages">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Messages</CardTitle>
-                  <CardDescription>Messages you've sent to our support team</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {messages.length === 0 ? (
-                    <div className="text-center py-8">
-                      <p className="text-gray-600 dark:text-gray-400 mb-4">You haven't sent any messages yet</p>
-                      <Link href="/contact">
-                        <Button className="bg-purple-600 hover:bg-purple-700">Contact Us</Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {messages.map((message) => (
-                        <Card key={message.id}>
-                          <CardContent className="pt-6">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                              {new Date(message.createdAt?.toDate()).toLocaleDateString()}
-                            </p>
-                            <p>{message.message}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
         </div>
       </div>
+      {process.env.NODE_ENV === "development" && <FirestoreDebug />}
     </div>
   )
 }

@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   title: "Fireplay - Your Gaming Store",
   description: "Find and buy the best video games online",
   manifest: "/manifest.json",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -24,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-zinc-950 text-zinc-50`}>
         <AuthProvider>
           <FavoritesProvider>
             <CartProvider>

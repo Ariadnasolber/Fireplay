@@ -1,6 +1,7 @@
 import { getGames } from "@/lib/rawg-api"
 import GameCard from "@/components/GameCard"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface GamesListProps {
   page?: number
@@ -9,10 +10,21 @@ interface GamesListProps {
 }
 
 export default async function GamesList({ page = 1, pageSize = 20, ordering = "-rating" }: GamesListProps) {
+  // Fetch games with the provided ordering parameter
   const { results: games, next, previous } = await getGames(page, pageSize, ordering)
 
   const nextPage = next ? page + 1 : null
   const prevPage = previous ? page - 1 : null
+
+  // Calculate the correct query string for pagination links
+  const getQueryString = (newPage: number) => {
+    const params = new URLSearchParams()
+    params.set("page", newPage.toString())
+    if (ordering !== "-rating") {
+      params.set("ordering", ordering)
+    }
+    return params.toString()
+  }
 
   return (
     <div>
@@ -24,17 +36,17 @@ export default async function GamesList({ page = 1, pageSize = 20, ordering = "-
 
       <div className="flex justify-between mt-8">
         {prevPage ? (
-          <Button variant="outline" href={`/games?page=${prevPage}`}>
-            Previous Page
-          </Button>
+          <Link href={`/games?${getQueryString(prevPage)}`}>
+            <Button variant="outline">Previous Page</Button>
+          </Link>
         ) : (
           <div></div>
         )}
 
         {nextPage && (
-          <Button variant="outline" href={`/games?page=${nextPage}`}>
-            Next Page
-          </Button>
+          <Link href={`/games?${getQueryString(nextPage)}`}>
+            <Button variant="outline">Next Page</Button>
+          </Link>
         )}
       </div>
     </div>
